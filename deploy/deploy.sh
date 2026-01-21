@@ -25,6 +25,6 @@ fi
 
 # Run new container
 echo "Starting new container on port $PORT..."
-sudo docker run -d --restart unless-stopped -p $PORT:80 --name $APP_NAME $APP_NAME
+sudo docker run -d --restart unless-stopped -p $PORT:4321 --name $APP_NAME $APP_NAME
 
 echo "Deployment complete! Application running on port $PORT."
