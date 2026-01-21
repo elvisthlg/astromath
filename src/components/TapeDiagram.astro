@@ -1,0 +1,82 @@
+---
+interface Props {
+  total?: number; // Represent specific value if needed, defaults to "1 whole" concept
+  segments: number; // Denominator
+  shaded: number; // Numerator
+  color?: string;
+  label?: string;
+  secondShading?: number; // overlap shading for multiplication
+  height?: string;
+}
+
+const { 
+  segments, 
+  shaded, 
+  color = "var(--primary-light)", 
+  label,
+  secondShading = 0,
+  height = "80px"
+} = Astro.props;
+
+// Calculate percentages for grid
+const segmentWidth = 100 / segments;
+---
+
+<div class="tape-wrapper">
+  {label && <div class="tape-label">{label}</div>}
+  <div class="tape-diagram" style={`height: ${height}; grid-template-columns: repeat(${segments}, 1fr);`}>
+    {Array.from({ length: segments }).map((_, i) => {
+      const isShaded = i < shaded;
+      const isSecondShaded = i < secondShading;
+      
+      let bgColor = 'white';
+      if (isSecondShaded && isShaded) {
+        bgColor = '#818cf8'; // overlap color (multiply)
+      } else if (isShaded) {
+        bgColor = color;
+      } else if (isSecondShaded) {
+        bgColor = 'var(--secondary-light)';
+      }
+
+      return (
+        <div class="tape-segment" style={`background-color: ${bgColor};`}>
+           <span class="segment-value">1/{segments}</span>
+        </div>
+      );
+    })}
+  </div>
+</div>
+
+<style>
+  .tape-wrapper {
+    margin-bottom: 2rem;
+  }
+  .tape-label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+  .tape-diagram {
+    display: grid;
+    border: 2px solid #1f2937;
+    border-radius: 4px;
+    background: white;
+    overflow: hidden;
+  }
+  .tape-segment {
+    border-right: 1px solid #9ca3af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: #4b5563;
+    position: relative;
+    transition: background-color 0.3s ease;
+  }
+  .tape-segment:last-child {
+    border-right: none;
+  }
+  .segment-value {
+    opacity: 0.5;
+  }
+</style>

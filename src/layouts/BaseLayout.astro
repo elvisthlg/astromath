@@ -1,0 +1,113 @@
+---
+const { title } = Astro.props;
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title} | Tape Diagrams</title>
+		<style is:global>
+			:root {
+				--primary: #4f46e5;
+				--primary-light: #e0e7ff;
+				--secondary: #ec4899;
+				--secondary-light: #fce7f3;
+				--text: #1f2937;
+				--bg: #f9fafb;
+				--border: #e5e7eb;
+			}
+			html {
+				font-family: system-ui, sans-serif;
+				background-color: var(--bg);
+				color: var(--text);
+			}
+			body {
+				margin: 0;
+				padding: 0;
+				min-height: 100vh;
+				display: flex;
+				flex-direction: column;
+			}
+			header {
+				background: white;
+				border-bottom: 1px solid var(--border);
+				padding: 1rem 2rem;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+			header h1 a {
+				color: var(--primary);
+				text-decoration: none;
+				font-weight: 800;
+				font-size: 1.5rem;
+			}
+			nav a {
+				margin-left: 1.5rem;
+				color: var(--text);
+				text-decoration: none;
+				font-weight: 500;
+			}
+			nav a:hover {
+				color: var(--primary);
+			}
+			main {
+				flex: 1;
+				width: 100%;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 2rem;
+			}
+			footer {
+				text-align: center;
+				padding: 2rem;
+				color: #6b7280;
+				font-size: 0.875rem;
+			}
+			h1, h2, h3 {
+				color: #111827;
+			}
+			.diagram-container {
+				background: white;
+				padding: 2rem;
+				border-radius: 8px;
+				border: 1px solid var(--border);
+				margin: 2rem 0;
+				box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+			}
+			.button {
+				display: inline-block;
+				background: var(--primary);
+				color: white;
+				padding: 0.75rem 1.5rem;
+				border-radius: 6px;
+				text-decoration: none;
+				font-weight: 600;
+				margin-top: 1rem;
+			}
+			.button:hover {
+				background: #4338ca;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1><a href="/">Math Tapes</a></h1>
+			<nav>
+				<a href="/addition">Add</a>
+				<a href="/subtraction">Subtract</a>
+				<a href="/multiplication">Multiply</a>
+				<a href="/division">Divide</a>
+			</nav>
+		</header>
+		<main>
+			<slot />
+		</main>
+		<footer>
+			&copy; {new Date().getFullYear()} Tape Diagrams | Built with Astro
+		</footer>
+	</body>
+</html>
