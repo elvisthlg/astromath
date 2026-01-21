@@ -12,12 +12,8 @@ export default function DivisionCalculator() {
     const [num2, setNum2] = useState(1);
     const [den2, setDen2] = useState(4);
 
+    // Steps: 0=Input, 1=Show Original, 2=Convert to Common Denom, 3=Result
     const [step, setStep] = useState(0);
-
-    // Division A / B. How many Bs in A?
-    // Common denominator approach is easiest to visualize.
-    // 1/2 / 1/4 -> 2/4 / 1/4.
-    // "How many 1s are in 2?" -> 2.
 
     const commonDenom = lcm(den1, den2);
     const newNum1 = num1 * (commonDenom / den1);
@@ -27,8 +23,9 @@ export default function DivisionCalculator() {
 
     const handleCalculate = () => {
         setStep(0);
-        setTimeout(() => setStep(1), 100);
-        setTimeout(() => setStep(2), 2500);
+        setTimeout(() => setStep(1), 100);  // Show
+        setTimeout(() => setStep(2), 2000); // Convert
+        setTimeout(() => setStep(3), 4000); // Result
     };
 
     return (
@@ -78,28 +75,32 @@ export default function DivisionCalculator() {
                 </button>
             </div>
 
-            <div style={{ transition: 'opacity 0.5s', opacity: step >= 0 ? 1 : 0 }}>
-                <h3>1. Find Common Denominator</h3>
-                <p>Convert everything to {commonDenom}ths.</p>
+            <div style={{ transition: 'opacity 0.5s', opacity: step >= 1 ? 1 : 0 }}>
+                <h3>Step 1: Setup</h3>
+                <p style={{ fontStyle: 'italic', marginBottom: '1rem', minHeight: '1.5em' }}>
+                    {step === 1 && "Start with the original fractions..."}
+                    {step === 2 && `Find Common Denominator (${commonDenom}).`}
+                    {step >= 3 && "Now simply divide the numerators!"}
+                </p>
                 <InteractiveTape
-                    segments={step >= 1 ? commonDenom : den1}
-                    shaded={step >= 1 ? newNum1 : num1}
-                    label={`Dividend: ${num1}/${den1} ${step >= 1 ? `→ ${newNum1}/${commonDenom}` : ''}`}
+                    segments={step >= 2 ? commonDenom : den1}
+                    shaded={step >= 2 ? newNum1 : num1}
+                    label={`Dividend: ${num1}/${den1} ${step >= 2 ? `→ ${newNum1}/${commonDenom}` : ''}`}
                 />
                 <InteractiveTape
-                    segments={step >= 1 ? commonDenom : den2}
-                    shaded={step >= 1 ? newNum2 : num2}
-                    label={`Divisor: ${num2}/${den2} ${step >= 1 ? `→ ${newNum2}/${commonDenom}` : ''}`}
+                    segments={step >= 2 ? commonDenom : den2}
+                    shaded={step >= 2 ? newNum2 : num2}
+                    label={`Divisor: ${num2}/${den2} ${step >= 2 ? `→ ${newNum2}/${commonDenom}` : ''}`}
                     color="var(--secondary)"
                 />
             </div>
 
-            {step >= 2 && (
+            {step >= 3 && (
                 <div style={{ marginTop: '2rem', animation: 'slideUp 0.5s ease-out' }}>
                     <h3 style={{ borderTop: '1px solid #e5e7eb', paddingTop: '1rem' }}>Result</h3>
-                    <p>Now just divide the numerators: {newNum1} &div; {newNum2}</p>
+                    <p>How many groups of {newNum2} fit into {newNum1}?</p>
+                    <p>Calculation: {newNum1} &div; {newNum2}</p>
                     <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Result: {Number.isInteger(result) ? result : result.toFixed(2)}</p>
-                    <p>(Meaning there are {result} groups of the divisor inside the dividend)</p>
                 </div>
             )}
             <style>{`

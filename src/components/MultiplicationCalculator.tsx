@@ -12,30 +12,19 @@ export default function MultiplicationCalculator() {
     const [num2, setNum2] = useState(3);
     const [den2, setDen2] = useState(4);
 
+    // Steps: 0=Input, 1=Show 2nd Fraction, 2=Subdivide, 3=Select Overlap, 4=Result
     const [step, setStep] = useState(0);
 
-    // For multiplication A * B (or A of B), we subdivide B.
-    // Final total segments = den1 * den2
-    // We first show num2/den2
-    // Then split each den2 segment into den1 parts -> total (den1*den2) parts
-    // Then we take num1 of those *groups* of parts.
-
-    // Actually, standard algo:
-    // Show B.
-    // Subdivide B by den1.
-    // Select num1 rows/groups of that subdivision.
-
     const commonDenom = den1 * den2;
-    // B expressed in common denom
     const bInCommon = num2 * den1;
-
-    // The actual result = num1 * num2
     const resultNum = num1 * num2;
 
     const handleCalculate = () => {
         setStep(0);
-        setTimeout(() => setStep(1), 100);
-        setTimeout(() => setStep(2), 2500);
+        setTimeout(() => setStep(1), 100);  // Show B
+        setTimeout(() => setStep(2), 2000); // Subdivide
+        setTimeout(() => setStep(3), 4000); // Highlight Overlap
+        setTimeout(() => setStep(4), 6000); // Result
     };
 
     return (
@@ -85,40 +74,43 @@ export default function MultiplicationCalculator() {
                 </button>
             </div>
 
-            <div style={{ transition: 'opacity 0.5s', opacity: step >= 0 ? 1 : 0 }}>
-                <h3>1. Represents {num2}/{den2}</h3>
-                <p>Start with the second fraction.</p>
+            <div style={{ transition: 'opacity 0.5s', opacity: step >= 1 ? 1 : 0 }}>
+                <h3>Step 1: Visualize {num2}/{den2}</h3>
+                <p style={{ fontStyle: 'italic', marginBottom: '1rem', minHeight: '1.5em' }}>
+                    {step === 1 && "Start with the second fraction (the whole we are taking a part of)."}
+                    {step === 2 && `Subdivide each part into ${den1} pieces to find ${num1}/${den1} of it.`}
+                    {step >= 3 && `Take ${num1} out of every ${den1} subdivided parts.`}
+                </p>
+
                 <InteractiveTape
-                    segments={step >= 1 ? commonDenom : den2}
-                    shaded={step >= 1 ? bInCommon : num2}
-                    label={`${num2}/${den2} ${step >= 1 ? `subdivided by ${den1} → ${bInCommon}/${commonDenom}` : ''}`}
+                    segments={step >= 2 ? commonDenom : den2}
+                    shaded={step >= 2 ? bInCommon : num2}
+                    label={`${num2}/${den2} ${step >= 2 ? `→ ${bInCommon}/${commonDenom}` : ''}`}
                     color="var(--primary-light)"
                 />
             </div>
 
-            {step >= 1 && (
+            {step >= 3 && (
                 <div style={{ transition: 'opacity 0.5s', opacity: 1, marginTop: '2rem' }}>
-                    <h3>2. Take {num1}/{den1} of the shaded area</h3>
-                    <p>The shaded area has {bInCommon} small segments. We need {num1}/{den1} of {bInCommon}.</p>
-                    <p>Wait, that logic handles simpler cases. Let's visualize the "double shading".</p>
+                    <h3>Step 2: Overlap</h3>
+                    <p>Identifying the pieces that represent {num1}/{den1} of the shaded area.</p>
                     <InteractiveTape
                         segments={commonDenom}
                         shaded={bInCommon}
                         secondShading={resultNum}
-                        label={`Overlapping ${resultNum} segments`}
+                        label={`Darker regions are the answer`}
                     />
                     <div style={{ margin: '1rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
                         <span style={{ width: 16, height: 16, background: '#818cf8', display: 'inline-block' }}></span>
-                        Overlap is the answer
+                        Result Area ({resultNum} segments)
                     </div>
                 </div>
             )}
 
-            {step >= 2 && (
+            {step >= 4 && (
                 <div style={{ marginTop: '2rem', animation: 'slideUp 0.5s ease-out' }}>
                     <h3 style={{ borderTop: '1px solid #e5e7eb', paddingTop: '1rem' }}>Result</h3>
-                    <p>{num1} * {num2} = {resultNum}</p>
-                    <p>{den1} * {den2} = {commonDenom}</p>
+                    <p>{num1}/{den1} of {num2}/{den2}</p>
                     <InteractiveTape
                         segments={commonDenom}
                         shaded={resultNum}

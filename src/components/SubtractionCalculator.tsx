@@ -12,18 +12,20 @@ export default function SubtractionCalculator() {
     const [num2, setNum2] = useState(1);
     const [den2, setDen2] = useState(8);
 
+    // Steps: 0=Input, 1=Show Original, 2=Convert to LCD, 3=Remove Parts, 4=Show Result
     const [step, setStep] = useState(0);
 
     const commonDenom = lcm(den1, den2);
-    // scaling
     const newNum1 = num1 * (commonDenom / den1);
     const newNum2 = num2 * (commonDenom / den2);
     const resultNum = newNum1 - newNum2;
 
     const handleCalculate = () => {
         setStep(0);
-        setTimeout(() => setStep(1), 100);
-        setTimeout(() => setStep(2), 2500);
+        setTimeout(() => setStep(1), 100);  // Show
+        setTimeout(() => setStep(2), 2000); // Convert
+        setTimeout(() => setStep(3), 4000); // Remove visual
+        setTimeout(() => setStep(4), 6000); // Result
     };
 
     return (
@@ -73,31 +75,30 @@ export default function SubtractionCalculator() {
                 </button>
             </div>
 
-            <div style={{ transition: 'opacity 0.5s', opacity: step >= 0 ? 1 : 0 }}>
-                <h3>1. Represent the first fraction</h3>
+            <div style={{ transition: 'opacity 0.5s', opacity: step >= 1 ? 1 : 0 }}>
+                <h3>Step 1: Setup</h3>
+                <p style={{ fontStyle: 'italic', marginBottom: '1rem', minHeight: '1.5em' }}>
+                    {step === 1 && "Start with the first fraction..."}
+                    {step === 2 && `Convert to ${commonDenom}ths to match denominators.`}
+                    {step >= 3 && `Remove ${newNum2} parts...`}
+                </p>
                 <InteractiveTape
-                    segments={step >= 1 ? commonDenom : den1}
-                    shaded={step >= 1 ? newNum1 : num1}
-                    label={`${num1}/${den1} ${step >= 1 ? `becomes ${newNum1}/${commonDenom}` : ''}`}
+                    segments={step >= 2 ? commonDenom : den1}
+                    shaded={step >= 2 ? newNum1 : num1}
+                    label={`${num1}/${den1} ${step >= 2 ? `→ ${newNum1}/${commonDenom}` : ''}`}
                 />
             </div>
 
-            {step >= 1 && (
+            {step >= 3 && (
                 <div style={{ transition: 'opacity 0.5s', opacity: 1, marginTop: '2rem' }}>
-                    <h3>2. Prepare to subtract {newNum2}/{commonDenom}</h3>
-                    <p>We visualize this by highlighting {newNum2} blocks to remove.</p>
-                    {/* Visual removal trick: shade the parts to be removed in red */}
+                    <h3>Step 2: Subtraction</h3>
+                    <p>Removing {newNum2}/{commonDenom} from {newNum1}/{commonDenom}.</p>
+
                     <div style={{ marginBottom: '2rem' }}>
-                        <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#1f2937' }}>
-                            Removing {newNum2} parts...
-                        </div>
                         <div style={{ display: 'flex', border: '2px solid #1f2937', borderRadius: '4px', background: 'white', height: '80px', overflow: 'hidden' }}>
                             {Array.from({ length: commonDenom }).map((_, i) => {
-                                // First newNum1 blocks are blue
-                                // BUT, the LAST 'newNum2' of those blocks should be RED
-
                                 const isOriginallyShaded = i < newNum1;
-                                // Indices to remove: [newNum1 - newNum2, newNum1 - 1]
+                                // Remove from the END of the shaded region for better visual
                                 const isRemoved = i >= (newNum1 - newNum2) && i < newNum1;
 
                                 let bg = 'white';
@@ -121,7 +122,7 @@ export default function SubtractionCalculator() {
                 </div>
             )}
 
-            {step >= 2 && (
+            {step >= 4 && (
                 <div style={{ marginTop: '2rem', animation: 'slideUp 0.5s ease-out' }}>
                     <h3 style={{ borderTop: '1px solid #e5e7eb', paddingTop: '1rem' }}>Result</h3>
                     <p>Remaining parts: {resultNum}</p>

@@ -12,7 +12,8 @@ export default function AdditionCalculator() {
     const [num2, setNum2] = useState(1);
     const [den2, setDen2] = useState(3);
 
-    const [step, setStep] = useState(0); // 0: input, 1: showing scaling, 2: showing result
+    // Steps: 0=Input, 1=Show Original, 2=Show Common Denom, 3=Show Result
+    const [step, setStep] = useState(0);
 
     const commonDenom = lcm(den1, den2);
     const scaling1 = commonDenom / den1;
@@ -25,8 +26,9 @@ export default function AdditionCalculator() {
     const handleCalculate = () => {
         setStep(0);
         // Sequence animations
-        setTimeout(() => setStep(1), 100);
-        setTimeout(() => setStep(2), 2500);
+        setTimeout(() => setStep(1), 100);  // Show original
+        setTimeout(() => setStep(2), 2500); // Show conversion
+        setTimeout(() => setStep(3), 5000); // Show result
     };
 
     return (
@@ -72,29 +74,38 @@ export default function AdditionCalculator() {
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                     }}
                 >
-                    Show Animation
+                    Animate
                 </button>
             </div>
 
-            <div style={{ transition: 'opacity 0.5s', opacity: step >= 0 ? 1 : 0 }}>
-                <h3>Initial Fractions</h3>
+            <div style={{ transition: 'opacity 0.5s', opacity: step >= 1 ? 1 : 0 }}>
+                <h3>Step 1: Visualize Operations</h3>
+                <p style={{ fontStyle: 'italic', marginBottom: '1rem', minHeight: '1.5em' }}>
+                    {step === 1 && "Start with the original fractions..."}
+                    {step === 2 && `Find Common Denominator (${commonDenom}). Subdividing...`}
+                    {step === 3 && "Add the parts together!"}
+                </p>
+
+                {/* First Fraction */}
                 <InteractiveTape
-                    segments={step >= 1 ? commonDenom : den1}
-                    shaded={step >= 1 ? newNum1 : num1}
-                    label={`${num1}/${den1} ${step >= 1 ? `becomes ${newNum1}/${commonDenom}` : ''}`}
+                    segments={step >= 2 ? commonDenom : den1}
+                    shaded={step >= 2 ? newNum1 : num1}
+                    label={`${num1}/${den1} ${step >= 2 ? `→ ${newNum1}/${commonDenom}` : ''}`}
                 />
+
+                {/* Second Fraction */}
                 <InteractiveTape
-                    segments={step >= 1 ? commonDenom : den2}
-                    shaded={step >= 1 ? newNum2 : num2}
+                    segments={step >= 2 ? commonDenom : den2}
+                    shaded={step >= 2 ? newNum2 : num2}
                     color="var(--secondary)"
-                    label={`${num2}/${den2} ${step >= 1 ? `becomes ${newNum2}/${commonDenom}` : ''}`}
+                    label={`${num2}/${den2} ${step >= 2 ? `→ ${newNum2}/${commonDenom}` : ''}`}
                 />
             </div>
 
-            {step >= 2 && (
+            {step >= 3 && (
                 <div style={{ marginTop: '2rem', animation: 'slideUp 0.5s ease-out' }}>
                     <h3 style={{ borderTop: '1px solid #e5e7eb', paddingTop: '1rem' }}>Result</h3>
-                    <p>Combine the shaded parts: {newNum1} + {newNum2} = {resultNum} parts.</p>
+                    <p>Total shaded parts: {newNum1} + {newNum2} = <strong>{resultNum}</strong></p>
                     <InteractiveTape
                         segments={commonDenom}
                         shaded={resultNum}
