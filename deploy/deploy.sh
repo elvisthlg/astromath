@@ -2,7 +2,7 @@
 set -e
 
 APP_NAME="math-tape-diagrams"
-PORT=80
+PORT=9876
 
 echo "Deploying $APP_NAME..."
 
